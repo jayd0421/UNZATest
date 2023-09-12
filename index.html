@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>UNZA Test</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/UNZAboundary_1.js"></script>
+        <script src="data/road_2.js"></script>
+        <script src="data/building_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        map.createPane('pane_EsriImagery_0');
+        map.getPane('pane_EsriImagery_0').style.zIndex = 400;
+        var layer_EsriImagery_0 = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            pane: 'pane_EsriImagery_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 22
+        });
+        layer_EsriImagery_0;
+        map.addLayer(layer_EsriImagery_0);
+        function pop_UNZAboundary_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(feature.properties['fid'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_UNZAboundary_1_0() {
+            return {
+                pane: 'pane_UNZAboundary_1',
+                opacity: 1,
+                color: 'rgba(99,91,255,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fillOpacity: 0,
+                interactive: false,
+            }
+        }
+        map.createPane('pane_UNZAboundary_1');
+        map.getPane('pane_UNZAboundary_1').style.zIndex = 401;
+        map.getPane('pane_UNZAboundary_1').style['mix-blend-mode'] = 'normal';
+        var layer_UNZAboundary_1 = new L.geoJson(json_UNZAboundary_1, {
+            attribution: '',
+            interactive: false,
+            dataVar: 'json_UNZAboundary_1',
+            layerName: 'layer_UNZAboundary_1',
+            pane: 'pane_UNZAboundary_1',
+            onEachFeature: pop_UNZAboundary_1,
+            style: style_UNZAboundary_1_0,
+        });
+        bounds_group.addLayer(layer_UNZAboundary_1);
+        map.addLayer(layer_UNZAboundary_1);
+        function pop_road_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">name</th>\
+                        <td>' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">type</th>\
+                        <td>' + (feature.properties['type'] !== null ? autolinker.link(feature.properties['type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">class</th>\
+                        <td>' + (feature.properties['class'] !== null ? autolinker.link(feature.properties['class'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">stage</th>\
+                        <td>' + (feature.properties['stage'] !== null ? autolinker.link(feature.properties['stage'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">photo</th>\
+                        <td>' + (feature.properties['photo'] !== null ? '<img src="images/' + String(feature.properties['photo']).replace(/[\\\/:]/g, '_').trim() + '" '+ 'class=popupImage' +'>' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">comment</th>\
+                        <td>' + (feature.properties['comment'] !== null ? autolinker.link(feature.properties['comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">inspector</th>\
+                        <td>' + (feature.properties['inspector'] !== null ? autolinker.link(feature.properties['inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">percent_progress</th>\
+                        <td>' + (feature.properties['percent_progress'] !== null ? autolinker.link(feature.properties['percent_progress'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_road_2_0() {
+            return {
+                pane: 'pane_road_2',
+                opacity: 1,
+                color: 'rgba(255,79,196,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_road_2');
+        map.getPane('pane_road_2').style.zIndex = 402;
+        map.getPane('pane_road_2').style['mix-blend-mode'] = 'normal';
+        var layer_road_2 = new L.geoJson(json_road_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_road_2',
+            layerName: 'layer_road_2',
+            pane: 'pane_road_2',
+            onEachFeature: pop_road_2,
+            style: style_road_2_0,
+        });
+        bounds_group.addLayer(layer_road_2);
+        map.addLayer(layer_road_2);
+        function pop_building_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">name</th>\
+                        <td>' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">type</th>\
+                        <td>' + (feature.properties['type'] !== null ? autolinker.link(feature.properties['type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">stage</th>\
+                        <td>' + (feature.properties['stage'] !== null ? autolinker.link(feature.properties['stage'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">photo</th>\
+                        <td>' + (feature.properties['photo'] !== null ? '<img src="images/' + String(feature.properties['photo']).replace(/[\\\/:]/g, '_').trim() + '">' : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">comment</th>\
+                        <td>' + (feature.properties['comment'] !== null ? autolinker.link(feature.properties['comment'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">inspector</th>\
+                        <td>' + (feature.properties['inspector'] !== null ? autolinker.link(feature.properties['inspector'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">percent_progress</th>\
+                        <td>' + (feature.properties['percent_progress'] !== null ? autolinker.link(feature.properties['percent_progress'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_building_3_0() {
+            return {
+                pane: 'pane_building_3',
+                opacity: 1,
+                color: 'rgba(255,71,224,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_building_3');
+        map.getPane('pane_building_3').style.zIndex = 403;
+        map.getPane('pane_building_3').style['mix-blend-mode'] = 'normal';
+        var layer_building_3 = new L.geoJson(json_building_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_building_3',
+            layerName: 'layer_building_3',
+            pane: 'pane_building_3',
+            onEachFeature: pop_building_3,
+            style: style_building_3_0,
+        });
+        bounds_group.addLayer(layer_building_3);
+        map.addLayer(layer_building_3);
+            var title = new L.Control();
+            title.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+            title.update = function () {
+                this._div.innerHTML = '<h2>UNZA Test</h2>';
+            };
+            title.addTo(map);
+            var abstract = new L.Control({'position':'bottomleft'});
+            abstract.onAdd = function (map) {
+                this._div = L.DomUtil.create('div',
+                'leaflet-control abstract');
+                this._div.id = 'abstract'
+
+                    abstract.show();
+                    return this._div;
+                };
+                abstract.show = function () {
+                    this._div.classList.remove("abstract");
+                    this._div.classList.add("abstractUncollapsed");
+                    this._div.innerHTML = 'This is a web map designed as a test in to precede the map that will be used by citizens to monitor CDF projects in Munali Constituency. ';
+            };
+            abstract.addTo(map);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/building_3.png" /> building': layer_building_3,'<img src="legend/road_2.png" /> road': layer_road_2,'<img src="legend/UNZAboundary_1.png" /> UNZAboundary': layer_UNZAboundary_1,"Esri Imagery": layer_EsriImagery_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_building_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"percent_progress": "int","stage": "str","type": "str","inspector": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_percent_progress = document.createElement("div");
+            div_percent_progress.id = "div_percent_progress";
+            div_percent_progress.className = "slider";
+            document.getElementById("menu").appendChild(div_percent_progress);
+            var lab_percent_progress = document.createElement('div');
+            lab_percent_progress.innerHTML  = 'percent_progress: <span id="val_percent_progress"></span>';
+            lab_percent_progress.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_percent_progress);
+            var reset_percent_progress = document.createElement('div');
+            reset_percent_progress.innerHTML = 'clear filter';
+            reset_percent_progress.className = 'filterlabel';
+            lab_percent_progress.className = 'filterlabel';
+            reset_percent_progress.onclick = function() {
+                sel_percent_progress.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_percent_progress);
+            var sel_percent_progress = document.getElementById('div_percent_progress');
+            noUiSlider.create(sel_percent_progress, {
+                connect: true,
+                start: [25, 100],
+                step: 1,
+                format: wNumb({
+                    decimals: 0,
+                    }),
+                range: {
+                min: 25,
+                max: 100
+                }
+            });
+            sel_percent_progress.noUiSlider.on('update', function (values) {
+            filterVals =[];
+            for (value in values){
+            filterVals.push(parseInt(value))
+            }
+            val_percent_progress = document.getElementById('val_percent_progress');
+            val_percent_progress.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_stage = document.createElement('div');
+            div_stage.id = "div_stage";
+            div_stage.className= "filterselect";
+            document.getElementById("menu").appendChild(div_stage);
+            sel_stage = document.createElement('select');
+            sel_stage.multiple = true;
+            sel_stage.size = 5;
+            sel_stage.id = "sel_stage";
+            var stage_options_str = "<option value='' unselected></option>";
+            sel_stage.onchange = function(){filterFunc()};
+            stage_options_str  += '<option value="Blockwork">Blockwork</option>';
+            stage_options_str  += '<option value="Complete">Complete</option>';
+            stage_options_str  += '<option value="Internal Finishes">Internal Finishes</option>';
+            stage_options_str  += '<option value="Landscaping">Landscaping</option>';
+            stage_options_str  += '<option value="Painting">Painting</option>';
+            sel_stage.innerHTML = stage_options_str;
+            div_stage.appendChild(sel_stage);
+            var lab_stage = document.createElement('div');
+            lab_stage.innerHTML = 'stage';
+            lab_stage.className = 'filterlabel';
+            div_stage.appendChild(lab_stage);
+            var reset_stage = document.createElement('div');
+            reset_stage.innerHTML = 'clear filter';
+            reset_stage.className = 'filterlabel';
+            reset_stage.onclick = function() {
+                var options = document.getElementById("sel_stage").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_stage.appendChild(reset_stage);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_type = document.createElement('div');
+            div_type.id = "div_type";
+            div_type.className= "filterselect";
+            document.getElementById("menu").appendChild(div_type);
+            sel_type = document.createElement('select');
+            sel_type.multiple = true;
+            sel_type.size = 8;
+            sel_type.id = "sel_type";
+            var type_options_str = "<option value='' unselected></option>";
+            sel_type.onchange = function(){filterFunc()};
+            type_options_str  += '<option value="Bituminous">Bituminous</option>';
+            type_options_str  += '<option value="Hostel">Hostel</option>';
+            type_options_str  += '<option value="Lecture Room">Lecture Room</option>';
+            type_options_str  += '<option value="Library">Library</option>';
+            type_options_str  += '<option value="Offices">Offices</option>';
+            type_options_str  += '<option value="Other">Other</option>';
+            type_options_str  += '<option value="Religious">Religious</option>';
+            type_options_str  += '<option value="Restaurant">Restaurant</option>';
+            sel_type.innerHTML = type_options_str;
+            div_type.appendChild(sel_type);
+            var lab_type = document.createElement('div');
+            lab_type.innerHTML = 'type';
+            lab_type.className = 'filterlabel';
+            div_type.appendChild(lab_type);
+            var reset_type = document.createElement('div');
+            reset_type.innerHTML = 'clear filter';
+            reset_type.className = 'filterlabel';
+            reset_type.onclick = function() {
+                var options = document.getElementById("sel_type").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_type.appendChild(reset_type);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_inspector = document.createElement('div');
+            div_inspector.id = "div_inspector";
+            div_inspector.className= "filterselect";
+            document.getElementById("menu").appendChild(div_inspector);
+            sel_inspector = document.createElement('select');
+            sel_inspector.multiple = true;
+            sel_inspector.size = 4;
+            sel_inspector.id = "sel_inspector";
+            var inspector_options_str = "<option value='' unselected></option>";
+            sel_inspector.onchange = function(){filterFunc()};
+            inspector_options_str  += '<option value="Enock">Enock</option>';
+            inspector_options_str  += '<option value="Gerald">Gerald</option>';
+            inspector_options_str  += '<option value="Jedidiah">Jedidiah</option>';
+            inspector_options_str  += '<option value="Otilia">Otilia</option>';
+            sel_inspector.innerHTML = inspector_options_str;
+            div_inspector.appendChild(sel_inspector);
+            var lab_inspector = document.createElement('div');
+            lab_inspector.innerHTML = 'inspector';
+            lab_inspector.className = 'filterlabel';
+            div_inspector.appendChild(lab_inspector);
+            var reset_inspector = document.createElement('div');
+            reset_inspector.innerHTML = 'clear filter';
+            reset_inspector.className = 'filterlabel';
+            reset_inspector.onclick = function() {
+                var options = document.getElementById("sel_inspector").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_inspector.appendChild(reset_inspector);
+        resetLabels([layer_UNZAboundary_1,layer_road_2,layer_building_3]);
+        map.on("zoomend", function(){
+            resetLabels([layer_UNZAboundary_1,layer_road_2,layer_building_3]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_UNZAboundary_1,layer_road_2,layer_building_3]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_UNZAboundary_1,layer_road_2,layer_building_3]);
+        });
+        </script>
+    </body>
+</html>
